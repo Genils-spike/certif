@@ -1,0 +1,11 @@
+{
+  "name": "certif-front",
+  "version": "1.0.0",
+  "description": "\"front folder for my certification\"",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nils",
+  "license": "ISC"
+}
