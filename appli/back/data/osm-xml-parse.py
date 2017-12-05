@@ -12,15 +12,19 @@ class rue:
 
 i = 0
 tree = etree.parse("map.osm")
+map = open("map.json", "w")
+
+map.write("{\"point\":[")
+map.close()
 
 for element in tree.xpath("way"):
 	way = element
 
 	for tag in way.xpath("tag"):
 		road = tag.attrib
+		test = rue()
 
 		if road["k"] == "highway":
-			test = rue()
 			i = i+1
 
 			for tag in way.xpath("tag"):
@@ -48,11 +52,13 @@ for element in tree.xpath("way"):
 					if node.attrib["id"] == nd_ref:
 						test.points.append([node.attrib["lon"],node.attrib["lat"]])
 
-	print(test.nom)
-	print(test.fonction)
-	print(test.bicycle)
-	print(test.maxspeed)
-	print(test.oneway)
-	print(test.points)
-	print(json.dump(test, indent=4, io))
+			with open('map.json', 'a') as f:
+				json.dump(test.__dict__, f)
+				f.write(",")
+		test = rue()
+
+
+map = open("map.json", "a")
+map.write("{\"end\":\"true\"}]}")
+map.close()
 print(i)
