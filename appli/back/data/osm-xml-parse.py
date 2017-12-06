@@ -10,72 +10,84 @@ class rue:
 	oneway = "none"
 	points =[]
 
+class node_object :
+	lon = "lon"
+	lat = "lat"
 j = 0
-node_array = []
+
 way_array = []
 tree = etree.parse("map.osm")
 
 #Creation of an warray with all of the map.osm way
 for element in tree.xpath("way"):
-	wayfu = element
-	for tag in wayfu.xpath("tag"):
+	way = element
+	for tag in way.xpath("tag"):
 			road = tag.attrib
 
 			if road["k"] == "highway":
 				j +=1
-				way = []
+				way_tmp = []
 
-				for tag in wayfu.xpath("tag"):
+				for tag in way.xpath("tag"):
 					name = tag.attrib
 
 					if name["k"] == "name":
-						way.append(name["v"])
+						way_tmp.append(name["v"])
 
 					else:
-						way.append("none")
+						way_tmp.append("none")
 
 					if name["k"] == "highway":
-						way.append(road["v"])
+						way_tmp.append(road["v"])
 
 					else:
-						way.append("none")
+						way_tmp.append("none")
 
 					if name["k"] == "bicycle":
-						way.append(road["v"])
+						way_tmp.append(road["v"])
 
 					else:
-						way.append("none")
-						
+						way_tmp.append("none")
+
 					if name["k"] == "maxspeed":
-						way.append(road["v"])
+						way_tmp.append(road["v"])
 
 					else:
-						way.append("none")
-						
+						way_tmp.append("none")
+
 					if name["k"] == "oneway":
-						way.append(road["v"])
+						way_tmp.append(road["v"])
 						break
 
 					else:
-						way.append("none")
+						way_tmp.append("none")
 						break
 
 
 				points = []
 
-				for nd in wayfu.xpath("nd"):
+				for nd in way.xpath("nd"):
 					nd_ref = nd.attrib["ref"]
 
 					points.append(nd_ref)
 
-				way.append(points)
-				way_array.append(way)
+				way_tmp.append(points)
+				way_array.append(way_tmp)
 
 print(j)
 
 #Creation of a list with all the node from map.osm
+node_array = {}
+
 for node in tree.xpath("node"):
-	node_array.append([node.attrib["id"], node.attrib["lon"], node.attrib["lat"]])
+	node_tmp = node_object()
+	node_tmp.lon = node.attrib["lon"]
+	node_tmp.lat = node.attrib["lat"]
+
+	#print(node_tmp.__dict__)
+	node_array[node.attrib["id"]] = node_tmp
+
+#print(node_array["34958227"])
 
 i = 0
 map = open("map.json", "w")
@@ -94,11 +106,8 @@ for element in way_array:
 	test.points = []
 
 	for nd in element[5]:
-		coord_list = [t for t in node_array if nd in t[0]]
-
-		test.points.append([coord_list[0][1], coord_list[0][2]])
-	i+=1
-
+		test.points.append([node_array[nd].lon, node_array[nd].lat])
+	i += 1
 	with open('map.json', 'a') as f:
 		json.dump(test.__dict__, f)
 		f.write(",")
