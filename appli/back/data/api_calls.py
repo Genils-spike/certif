@@ -59,5 +59,4 @@ if sys.argv[1] == "bus_lines":
 
 
 			collection.insert(tmp.__dict__)
-
-
+			
