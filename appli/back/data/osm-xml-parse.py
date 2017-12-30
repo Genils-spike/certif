@@ -1,6 +1,9 @@
-import os
-import json
+import os, json, pymongo, sys
 from lxml import etree
+
+client = pymongo.MongoClient("mongodb://127.0.0.1:27017")
+db = client['map_data']
+collection = dn['roads']
 
 class rue:
 	nom = "no name"
@@ -16,7 +19,7 @@ class node_object :
 j = 0
 
 way_array = []
-tree = etree.parse("map.osm")
+tree = etree.parse(sys.argv[1])
 
 #Creation of an warray with all of the map.osm way
 for element in tree.xpath("way"):
@@ -90,28 +93,23 @@ for node in tree.xpath("node"):
 #print(node_array["34958227"])
 
 i = 0
-map = open("map.json", "w")
-
-map.write("{\"point\":[")
-map.close()
 
 #Parse of the way elment an integration in a rue class
 for element in way_array:
-	test = rue()
-	test.nom = element[0]
-	test.fonction = element[1]
-	test.bicycle = element[2]
-	test.maxspeed = element[3]
-	test.oneway = element[4]
-	test.points = []
+	tmp = rue()
+	tmp.nom = element[0]
+	tmp.fonction = element[1]
+	tmp.bicycle = element[2]
+	tmp.maxspeed = element[3]
+	tmp.oneway = element[4]
+	tmp.points = []
 
 	for nd in element[5]:
-		test.points.append([node_array[nd].lon, node_array[nd].lat])
+		tmp.points.append([node_array[nd].lon, node_array[nd].lat])
 	i += 1
-	with open('map.json', 'a') as f:
-		json.dump(test.__dict__, f)
-		f.write(",")
-	print(i,"/",j)
+
+	collection.insert(tmp.__dict__)
+
 	test = rue()
 
 
