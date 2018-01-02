@@ -9,7 +9,7 @@ if sys.argv[1] == "road_works":
 		api_url = "http://travaux.data.rennesmetropole.fr/api/roadworks"
 		api = requests.get(api_url).json()
 
-		#drop the old collection
+		#drop the old collection waiting for a better sorting of the new datas
 		collection.drop()
 
 		class road_works :
@@ -19,8 +19,7 @@ if sys.argv[1] == "road_works":
 			tmp = road_works()
 			properties = events["properties"]
 
-			#creation of the road_works database enteries		
-			
+			#creation of the road_works database enteries			
 			tmp.works_id = properties["id"]
 			tmp.insert_date_hour = time.localtime()
 			tmp.city = properties["commune"]
@@ -34,7 +33,6 @@ if sys.argv[1] == "road_works":
 			tmp.works_location = events["geometry"]
 
 			#insertion of road works in the database
-
 			collection.insert(tmp.__dict__)
 			print(tmp.__dict__)
 

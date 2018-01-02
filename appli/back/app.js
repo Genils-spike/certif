@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 mongoose.Promise = global.Promise
 mongoose.connect('mongodb://localhost/renzen')
 
-app.use('/users', require('.'))
+app.use('/users', require('./routes/users'))
 
 app.listen(port);
 
