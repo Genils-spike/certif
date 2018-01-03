@@ -1,12 +1,14 @@
 import tornado.web, tornado.ioloop
+import json
 
 class hello_world(tornado.web.RequestHandler):
-	def get(self):
-		self.write("Hello, world")
-
-class hello_world_ki(tornado.web.RequestHandler):
-	def get(self):
-		self.write("Hello, world 2 the coumback")
+	def post(self):
+		reponse_obj = {
+			"status" : "success",
+			"message" : "hello world"
+		}
+		self.write(json.dumps(reponse_obj))
+	get = post
 
 def make_app():
 	return tornado.web.Application([
