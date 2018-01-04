@@ -1,11 +1,8 @@
-import tornado.web, tornado.ioloop, json, motor
+import tornado.web, tornado.ioloop, json
 from routes.users import urls
 
-client = motor.motor_tornado.MotorClient()
-db = client.test_database
-
 def make_app():
-	return tornado.web.Application(urls, db=db)
+	return tornado.web.Application(urls)
 
 if __name__ == "__main__":
 	app = make_app()

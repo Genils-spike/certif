@@ -1,4 +1,4 @@
-import tornado.web, json
+import tornado.web, json, re
 
 def load_src(name, fpath):
     import os, imp
@@ -10,3 +10,6 @@ import user_model
 class sign_up(tornado.web.RequestHandler):
     def post(self):
         test = json.loads(self.request.body)
+
+        self.write(user_model.sign_up(test))
+
