@@ -1,19 +1,11 @@
-import tornado.web, tornado.ioloop
-import json
+import tornado.web, tornado.ioloop, json, motor
+from routes.users import urls
 
-class hello_world(tornado.web.RequestHandler):
-	def post(self):
-		reponse_obj = {
-			"status" : "success",
-			"message" : "hello world"
-		}
-		self.write(json.dumps(reponse_obj))
-	get = post
+client = motor.motor_tornado.MotorClient()
+db = client.test_database
 
 def make_app():
-	return tornado.web.Application([
-		(r"/", hello_world),
-	])
+	return tornado.web.Application(urls, db=db)
 
 if __name__ == "__main__":
 	app = make_app()
