@@ -8,7 +8,6 @@ load_src("controllers", "../controllers/users.py")
 import controllers
 
 urls = [
-			(r"/signup", controllers.sign_up)
-			#(r"user/signup", controllers.signup()),
-			#(r"user/login", controllers.login())
+			(r"/user/signup", controllers.sign_up),
+			(r"/user/login", controllers.login)
 		]

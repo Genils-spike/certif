@@ -1,19 +1,19 @@
-import re, bcrypt, motor
+import re, bcrypt, json
+from pymongo import MongoClient
 
-client = motor.motor_tornado.MotorClient()
+client = MongoClient()
 db = client['renzen']
+collection = db['users']
 
 def sign_up(data):
-	size = len(data)
 
 	###check the size of the post method###
-	if size < 3 or size > 3 :
+	if len(data) < 3 and len(data) > 3 :
 		return { "error" : "missing arguments"}
 
 	###check if username is valid###
 	if 'username' in data:
 		username = data['username']
-
 		#check if username is not empty
 		if not username:
 			return {"message" : "missing username"}
@@ -21,7 +21,6 @@ def sign_up(data):
 		#check username normalization
 		for u in username:
 			user_regx = re.compile('^[a-zA-ZÀ-ÿ0-9_.-]+$')
-			print(user_regx.match(u))
 
 			if user_regx.match(u) is None:
 				return {"message" : "invalid username"}
@@ -32,6 +31,10 @@ def sign_up(data):
 
 		if len(username) > 25:
 			return {"mesage" : "username is too long"}
+
+		if collection.find_one({'username' : username}) is not None:
+			return {"message" : "username is already exist"}
+		
 
 	else :
 		return {"message" : "missing username in the post method" }
@@ -46,7 +49,6 @@ def sign_up(data):
 
 		for u in password:
 			user_regx = re.compile('^[a-zA-Z0-9]+$')
-			print(user_regx.match(u))
 
 			if user_regx.match(u) is None:
 				return {"message" : "invalid password"}
@@ -71,11 +73,46 @@ def sign_up(data):
 		if re.search(r'\w+@\w+\.+[a-zA-Z]', email) == None:
 			return {"message" : "invalid email"}
 
+		if collection.find_one({'email' : email}) is not None:
+			return {"message" : "email is already exist"}
+		
 	else:
 		return {"message" : "missing email in the post method" }
 
 	password_tmp = data['password'].encode('utf-8')
 	data['password'] = bcrypt.hashpw(password_tmp, bcrypt.gensalt())
 
-	print(data['password'])
+	collection.insert_one(data)
 	return {"message" : "user is create"}
+
+def login(data):
+
+	if len(data) < 2 and len(data) > 2 :
+		return { "error" : "missing arguments"}
+
+	login = data['login']
+	pwd = data['password'].encode('utf-8')
+
+	if collection.find_one({'username' : login}) is None and collection.find_one({'email' : login}) is None:
+		return {'mesage' : 'invalid login'}
+
+	else:
+		user_check = collection.find_one({'username' : login})
+		email_check = collection.find_one({'email' : login})
+		user_pwd = ""
+
+		if user_check is not None:
+			user_pwd = user_check['password']
+
+		if email_check is not None:
+			user_pwd = user_check['password']
+
+		user_pwd
+
+		pwd_compare = bcrypt.checkpw(pwd, user_pwd)
+
+		if bcrypt.checkpw(pwd, user_pwd):
+			user_id = str(user_check["_id"])
+			return {"user_id" : user_id}
+
+		return {"message" : "invalid password"}

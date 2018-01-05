@@ -8,8 +8,14 @@ load_src("user_model", "../models/users.py")
 import user_model
 
 class sign_up(tornado.web.RequestHandler):
-    def post(self):
-        test = json.loads(self.request.body)
+	def post(self):
+		test = json.loads(self.request.body.decode('utf-8'))
 
-        self.write(user_model.sign_up(test))
+		self.write(user_model.sign_up(test))
+
+class login(tornado.web.RequestHandler):
+	def post(self):
+		test = json.loads(self.request.body.decode('utf-8'))
+
+		self.write(user_model.login(test))
 
