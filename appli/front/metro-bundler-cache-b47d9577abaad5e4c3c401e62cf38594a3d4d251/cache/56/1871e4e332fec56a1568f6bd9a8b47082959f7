@@ -1,0 +1,114 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof (typeof Symbol === "function" ? Symbol.iterator : "@@iterator") === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== (typeof Symbol === "function" ? Symbol.prototype : "@@prototype") ? "symbol" : typeof obj;
+};
+
+exports.default = function (_ref) {
+  var t = _ref.types;
+
+  return {
+    visitor: {
+      MemberExpression: function MemberExpression(nodePath, state) {
+        processNode(getReplacements(state.opts), nodePath, t.valueToNode, memberExpressionComparator);
+      },
+
+      Identifier: function Identifier(nodePath, state) {
+        processNode(getReplacements(state.opts), nodePath, t.valueToNode, identifierComparator);
+      },
+
+      UnaryExpression: function UnaryExpression(nodePath, state) {
+        if (nodePath.node.operator !== "typeof") {
+          return;
+        }
+
+        var replacements = getReplacements(state.opts);
+        var keys = Object.keys(replacements);
+        var typeofValues = {};
+
+        keys.forEach(function (key) {
+          if (key.substring(0, 7) === "typeof ") {
+            typeofValues[key.substring(7)] = replacements[key];
+          }
+        });
+
+        processNode(typeofValues, nodePath, t.valueToNode, unaryExpressionComparator);
+      }
+    }
+  };
+};
+
+var fs = require("fs");
+var path = require("path");
+var traverse = require("traverse");
+
+var _require = require("lodash"),
+    get = _require.get,
+    has = _require.has,
+    find = _require.find;
+
+var getSortedObjectPaths = exports.getSortedObjectPaths = function getSortedObjectPaths(obj) {
+  if (!obj) {
+    return [];
+  }
+
+  return traverse(obj).paths().filter(function (arr) {
+    return arr.length;
+  }).map(function (arr) {
+    return arr.join(".");
+  }).sort(function (elem) {
+    return elem.length;
+  });
+};
+
+var getReplacements = function getReplacements(configOptions) {
+  if ((typeof configOptions === "undefined" ? "undefined" : _typeof(configOptions)) === "object") {
+    return configOptions;
+  }
+
+  try {
+    var fullPath = path.join(process.cwd(), configOptions);
+    fs.accessSync(fullPath, fs.F_OK);
+    return require(fullPath);
+  } catch (err) {
+    console.error("The nodePath: " + configOptions + " is not valid.");
+    throw new Error(err);
+  }
+};
+
+var replaceAndEvaluateNode = function replaceAndEvaluateNode(replaceFn, nodePath, replacement) {
+  nodePath.replaceWith(replaceFn(replacement));
+
+  if (nodePath.parentPath.isBinaryExpression()) {
+    var result = nodePath.parentPath.evaluate();
+
+    if (result.confident) {
+      nodePath.parentPath.replaceWith(replaceFn(result.value));
+    }
+  }
+};
+
+var processNode = function processNode(replacements, nodePath, replaceFn, comparator) {
+  var replacementKey = find(getSortedObjectPaths(replacements), function (value) {
+    return comparator(nodePath, value);
+  });
+  if (has(replacements, replacementKey)) {
+    replaceAndEvaluateNode(replaceFn, nodePath, get(replacements, replacementKey));
+  }
+};
+
+var memberExpressionComparator = function memberExpressionComparator(nodePath, value) {
+  return nodePath.matchesPattern(value);
+};
+var identifierComparator = function identifierComparator(nodePath, value) {
+  return nodePath.node.name === value;
+};
+var unaryExpressionComparator = function unaryExpressionComparator(nodePath, value) {
+  return nodePath.node.argument.name === value;
+};

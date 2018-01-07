@@ -1,0 +1,171 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react2 = require('react');
+
+var _react3 = _interopRequireDefault(_react2);
+
+var _index = require('./../node_modules/react-transform-hmr/lib/index.js');
+
+var _index2 = _interopRequireDefault(_index);
+
+var _jsxFileName = '/Users/nils/Projet/certif/appli/front/layouts/index.js';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _reactNative = require('react-native');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _components = {
+  Index: {
+    displayName: 'Index'
+  }
+};
+
+var _node_modulesReactTransformHmrLibIndexJs2 = (0, _index2.default)({
+  filename: '/Users/nils/Projet/certif/appli/front/layouts/index.js',
+  components: _components,
+  locals: [module],
+  imports: [_react3.default]
+});
+
+function _wrapComponent(id) {
+  return function (Component) {
+    return _node_modulesReactTransformHmrLibIndexJs2(Component, id);
+  };
+}
+
+var Index = _wrapComponent('Index')(function (_React$Component) {
+  _inherits(Index, _React$Component);
+
+  function Index() {
+    _classCallCheck(this, Index);
+
+    return _possibleConstructorReturn(this, (Index.__proto__ || Object.getPrototypeOf(Index)).apply(this, arguments));
+  }
+
+  _createClass(Index, [{
+    key: 'render',
+    value: function render() {
+      value = _reactNative.AsyncStorage.getItem('@MySuperStore:key');
+      console.log(value);
+      console.log('lol');
+      var navigate = this.props.navigation.navigate;
+
+      return _react3.default.createElement(
+        _reactNative.View,
+        { style: styles.container, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 15
+          }
+        },
+        _react3.default.createElement(
+          _reactNative.Text,
+          { style: styles.title, __source: {
+              fileName: _jsxFileName,
+              lineNumber: 16
+            }
+          },
+          'RENZEN'
+        ),
+        _react3.default.createElement(
+          _reactNative.TouchableOpacity,
+          { style: styles.connexion,
+            onPress: function onPress() {
+              return navigate('Login');
+            },
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 19
+            }
+          },
+          _react3.default.createElement(
+            _reactNative.Text,
+            { style: styles.textConnexion, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 22
+              }
+            },
+            'Connexion'
+          )
+        ),
+        _react3.default.createElement(
+          _reactNative.TouchableOpacity,
+          { style: styles.inscription,
+            onPress: function onPress() {
+              return navigate('Signin');
+            },
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 26
+            }
+          },
+          _react3.default.createElement(
+            _reactNative.Text,
+            { style: styles.textInscription, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 29
+              }
+            },
+            'INSCRIPTION'
+          )
+        )
+      );
+    }
+  }]);
+
+  return Index;
+}(_react3.default.Component));
+
+exports.default = Index;
+
+
+var styles = _reactNative.StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#202020',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  title: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 40,
+    paddingBottom: 15
+
+  },
+  connexion: {
+    borderColor: '#A1F700',
+    alignItems: 'center',
+    borderWidth: 1,
+    width: 250,
+    marginBottom: 15
+  },
+  inscription: {
+    borderColor: '#A1F700',
+    backgroundColor: '#A1F700',
+    alignItems: 'center',
+    borderWidth: 1,
+    width: 250
+  },
+  textConnexion: {
+    fontSize: 20,
+    letterSpacing: 7,
+    color: '#A1F700',
+    padding: 5
+  },
+  textInscription: {
+    fontSize: 20,
+    letterSpacing: 7,
+    color: '#202020',
+    padding: 5
+  }
+});

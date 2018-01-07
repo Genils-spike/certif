@@ -1,0 +1,170 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = undefined;
+
+var _react = require('react');
+
+var _react2 = babelHelpers.interopRequireDefault(_react);
+
+var _reactNative = require('react-native');
+
+var Signin = function (_React$Component) {
+  babelHelpers.inherits(Signin, _React$Component);
+
+  function Signin(props) {
+    babelHelpers.classCallCheck(this, Signin);
+
+    var _this = babelHelpers.possibleConstructorReturn(this, (Signin.__proto__ || Object.getPrototypeOf(Signin)).call(this, props));
+
+    _this.handleSubmit = function () {
+      var navigate = _this.props.navigation.navigate;
+
+      console.log(_this.state);
+      fetch('http://192.168.0.31:8888/user/signup', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(_this.state)
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        console.log(data);
+      }).then(function () {
+        return navigate('Index');
+      }).catch(function (err) {
+        console.log(err);
+      });
+    };
+
+    _this.state = {
+      username: '',
+      password: '',
+      email: ''
+    };
+    return _this;
+  }
+
+  babelHelpers.createClass(Signin, [{
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      return _react2.default.createElement(
+        _reactNative.View,
+        { style: styles.container },
+        _react2.default.createElement(
+          _reactNative.Text,
+          { style: styles.title },
+          'Cr\xE9er un compte'
+        ),
+        _react2.default.createElement(
+          _reactNative.Text,
+          { style: styles.text },
+          'Nom d\'utilisateur'
+        ),
+        _react2.default.createElement(_reactNative.TextInput, { style: styles.textinput,
+          editable: true,
+          onChangeText: function onChangeText(username) {
+            return _this2.setState({ username: username });
+          },
+          placeholder: 'Enter your login here',
+          underlineColorAndroid: 'transparent'
+        }),
+        _react2.default.createElement(
+          _reactNative.Text,
+          { style: styles.text },
+          'Email'
+        ),
+        _react2.default.createElement(_reactNative.TextInput, { style: styles.textinput,
+          editable: true,
+          onChangeText: function onChangeText(email) {
+            return _this2.setState({ email: email });
+          },
+          placeholder: 'Enter your Email here',
+          underlineColorAndroid: 'transparent'
+        }),
+        _react2.default.createElement(
+          _reactNative.Text,
+          { style: styles.text },
+          'Password'
+        ),
+        _react2.default.createElement(_reactNative.TextInput, { style: styles.textinput,
+          editable: true,
+          onChangeText: function onChangeText(password) {
+            return _this2.setState({ password: password });
+          },
+          placeholder: 'Enter your password here',
+          underlineColorAndroid: 'transparent',
+          secureTextEntry: true
+        }),
+        _react2.default.createElement(
+          _reactNative.TouchableOpacity,
+          { style: styles.connexion,
+            onPress: this.handleSubmit.bind(this)
+          },
+          _react2.default.createElement(
+            _reactNative.Text,
+            { style: styles.textConnexion },
+            'INSCRIPTION'
+          )
+        )
+      );
+    }
+  }]);
+  return Signin;
+}(_react2.default.Component);
+
+exports.default = Signin;
+
+
+var styles = _reactNative.StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#202020',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  title: {
+    color: '#A1F700',
+    fontWeight: 'bold',
+    fontSize: 25,
+    paddingBottom: 15
+
+  },
+  text: {
+    color: 'white',
+    fontWeight: '100',
+    fontSize: 12,
+    marginBottom: 1
+  },
+  textinput: {
+    backgroundColor: '#ffffff',
+    borderColor: '#A1F700',
+    borderWidth: 1,
+    width: 250,
+    height: 40,
+    marginBottom: 8,
+    paddingLeft: 5
+  },
+  connexion: {
+    borderColor: '#A1F700',
+    backgroundColor: '#A1F700',
+    alignItems: 'center',
+    borderWidth: 1,
+    width: 250,
+    marginTop: 12
+  },
+  textConnexion: {
+    fontSize: 20,
+    letterSpacing: 7,
+    color: '#202020',
+    padding: 5
+  },
+  forgotPWD: {
+    marginTop: 7,
+    color: '#A1F700'
+  }
+});

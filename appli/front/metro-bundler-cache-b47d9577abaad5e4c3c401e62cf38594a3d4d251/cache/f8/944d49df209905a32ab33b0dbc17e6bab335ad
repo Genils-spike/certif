@@ -1,0 +1,138 @@
+"use strict";
+
+var assertTransform = require("assert-transform");
+var babel = require("babel-core");
+var path = require("path");
+var assert = require("assert");
+
+var babelPluginTransformDefine = require("../lib/index.js");
+
+var getBabelOps = function getBabelOps(pluginOps) {
+  return {
+    "presets": ["es2015"],
+    "plugins": [[path.resolve(__dirname, "../lib/index.js"), pluginOps]]
+  };
+};
+
+describe("babel-plugin-transform-define", function () {
+  before(function () {
+    this.timeout(10000);
+    babel.transform("const x = 1;", getBabelOps());
+  });
+
+  describe("transformation tests", function () {
+    describe("Member Expressions", function () {
+      it("should transform with config defined by String keys", function () {
+        var babelOpts = getBabelOps({
+          "process.env.NODE_ENV": "development"
+        });
+
+        return assertTransform(path.join(__dirname, "./member-expression/actual.js"), path.join(__dirname, "./member-expression/expected.js"), babelOpts);
+      });
+
+      it("should transform with config defined by an Object", function () {
+        var babelOpts = getBabelOps({
+          "process": {
+            env: {
+              NODE_ENV: "development"
+            }
+          }
+        });
+
+        return assertTransform(path.join(__dirname, "./member-expression/actual.js"), path.join(__dirname, "./member-expression/expected.js"), babelOpts);
+      });
+    });
+
+    it("should transform Unary Expressions", function () {
+      var babelOpts = getBabelOps({
+        "typeof window": "object"
+      });
+
+      return assertTransform(path.join(__dirname, "./unary-expression/actual.js"), path.join(__dirname, "./unary-expression/expected.js"), babelOpts);
+    });
+
+    it("should transform Identifiers", function () {
+      var babelOpts = getBabelOps({
+        "VERSION": "1.0.0",
+        "PRODUCTION": true
+      });
+
+      return assertTransform(path.join(__dirname, "./identifier/actual.js"), path.join(__dirname, "./identifier/expected.js"), babelOpts);
+    });
+
+    it("should transform false", function () {
+      var babelOpts = getBabelOps({
+        "PRODUCTION": false
+      });
+
+      return assertTransform(path.join(__dirname, "./false/actual.js"), path.join(__dirname, "./false/expected.js"), babelOpts);
+    });
+
+    it("should transform 0", function () {
+      var babelOpts = getBabelOps({
+        "PRODUCTION": 0
+      });
+
+      return assertTransform(path.join(__dirname, "./0/actual.js"), path.join(__dirname, "./0/expected.js"), babelOpts);
+    });
+
+    it("should transform empty string", function () {
+      var babelOpts = getBabelOps({
+        "PRODUCTION": ''
+      });
+
+      return assertTransform(path.join(__dirname, "./emptyString/actual.js"), path.join(__dirname, "./emptyString/expected.js"), babelOpts);
+    });
+
+    it("should transform null", function () {
+      var babelOpts = getBabelOps({
+        "PRODUCTION": null
+      });
+
+      return assertTransform(path.join(__dirname, "./null/actual.js"), path.join(__dirname, "./null/expected.js"), babelOpts);
+    });
+
+    it("should transform undefined", function () {
+      var babelOpts = getBabelOps({
+        "PRODUCTION": undefined
+      });
+
+      return assertTransform(path.join(__dirname, "./undefined/actual.js"), path.join(__dirname, "./undefined/expected.js"), babelOpts);
+    });
+
+    it("should transform code from config in a file", function () {
+      var babelOpts = getBabelOps("./test/load-config-file/config.js");
+
+      return assertTransform(path.join(__dirname, "./load-config-file/actual.js"), path.join(__dirname, "./load-config-file/expected.js"), babelOpts);
+    });
+  });
+
+  describe("unit tests", function () {
+    describe("getSortedObjectPaths", function () {
+      it("should return an array", function () {
+        var objectPaths = babelPluginTransformDefine.getSortedObjectPaths(null);
+        assert(Array.isArray(objectPaths));
+        objectPaths = babelPluginTransformDefine.getSortedObjectPaths(undefined);
+        assert(Array.isArray(objectPaths));
+        objectPaths = babelPluginTransformDefine.getSortedObjectPaths();
+        assert(Array.isArray(objectPaths));
+        objectPaths = babelPluginTransformDefine.getSortedObjectPaths({});
+        assert(Array.isArray(objectPaths));
+        objectPaths = babelPluginTransformDefine.getSortedObjectPaths({ process: "env" });
+        assert(Array.isArray(objectPaths));
+      });
+      it("should return a complete list of paths", function () {
+        var obj = { process: { env: { NODE_ENV: "development" } } };
+        var objectPaths = babelPluginTransformDefine.getSortedObjectPaths(obj);
+        assert.deepEqual(objectPaths, ["process.env.NODE_ENV", "process.env", "process"]);
+      });
+      it("should return a list sorted by length", function () {
+        var obj = { process: { env: { NODE_ENV: "development" } } };
+        var objectPaths = babelPluginTransformDefine.getSortedObjectPaths(obj);
+        assert.deepEqual(objectPaths, objectPaths.sort(function (elem) {
+          return elem.length;
+        }));
+      });
+    });
+  });
+});
